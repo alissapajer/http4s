@@ -10,8 +10,9 @@ import scala.concurrent.duration.Duration
 object SimpleHttp1Client {
   def apply(timeout: Duration = DefaultTimeout,
          bufferSize: Int = DefaultBufferSize,
+          userAgent: Option[String] = DefaultUserAgent,
            executor: ExecutorService = ClientDefaultEC,
          sslContext: Option[SSLContext] = None,
               group: Option[AsynchronousChannelGroup] = None) =
-    new BlazeClient(new Http1Support(bufferSize, timeout, executor, sslContext, group))
+    new BlazeClient(new Http1Support(bufferSize, timeout, userAgent, executor, sslContext, group))
 }

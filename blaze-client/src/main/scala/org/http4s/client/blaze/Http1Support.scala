@@ -28,6 +28,7 @@ import scalaz.{\/, -\/, \/-}
   * Also serves as a non-recycling [[ConnectionManager]] */
 final class Http1Support(bufferSize: Int,
                             timeout: Duration,
+                          userAgent: Option[String],
                                  es: ExecutorService,
                         osslContext: Option[SSLContext],
                               group: Option[AsynchronousChannelGroup])
@@ -67,7 +68,7 @@ final class Http1Support(bufferSize: Int,
   }
 
   private def buildStages(uri: Uri): (LeafBuilder[ByteBuffer], BlazeClientStage) = {
-    val t = new Http1ClientStage(timeout)(ec)
+    val t = new Http1ClientStage(userAgent, timeout)(ec)
     val builder = LeafBuilder(t)
     uri match {
       case Uri(Some(Https),_,_,_,_) =>
