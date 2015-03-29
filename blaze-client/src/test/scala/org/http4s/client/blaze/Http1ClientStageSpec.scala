@@ -153,7 +153,7 @@ class Http1ClientStageSpec extends Specification with NoTimeConversions {
 
       val requestLines = request.split("\r\n").toList
 
-      requestLines must contain("User-Agent: http4s-blaze")
+      requestLines must contain(s"User-Agent: ${DefaultUserAgent.get}")
       response must_==("done")
     }
 
