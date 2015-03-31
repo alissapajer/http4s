@@ -20,10 +20,29 @@ object BlazeWebSocketExample extends App {
   import org.http4s.dsl._
   import org.http4s.server.websocket._
 
-import scala.concurrent.duration._
+  import scala.concurrent.duration._
   import scalaz.concurrent.Task
   import scalaz.stream.async.topic
   import scalaz.stream.{Process, Sink}
+
+  def makeNode(name: String, cluster: Int): String =
+    s"""{"cluster":$cluster,"name":"$name"}"""
+
+  def makeArray(strs: List[String]): String =
+    strs.mkString("[", ",", "]")
+
+  val nodeDump: String = makeArray(
+    List(
+      makeNode("fooa", 1),
+      makeNode("foob", 1),
+      makeNode("fooc", 1),
+      makeNode("food", 1),
+      makeNode("fooe", 2),
+      makeNode("foof", 2),
+      makeNode("foog", 2),
+      makeNode("fooh", 3),
+      makeNode("fooi", 3),
+      makeNode("fooj", 3)))
 
 
   val route = HttpService {
@@ -31,7 +50,8 @@ import scala.concurrent.duration._
       Ok("Hello world.")
 
     case req@ GET -> Root / "ws" =>
-      val src = awakeEvery(1.seconds)(Strategy.DefaultStrategy, DefaultScheduler).map{ d => Text(s"Ping! $d") }
+      // val src = awakeEvery(1.seconds)(Strategy.DefaultStrategy, DefaultScheduler).map{ d => Text(s"Ping! $d") }
+      val src = Process(Text(nodeDump))
       val sink: Sink[Task, WebSocketFrame] = Process.constant {
         case Text(t, _) => Task.delay( println(t))
         case f       => Task.delay(println(s"Unknown type: $f"))
